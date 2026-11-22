@@ -1,18 +1,19 @@
+@font-face { font-family: FusionPixel; src: url("assets/FusionPixel.otf") format("opentype"); font-display: swap; }
 /* ORA web demo — tokens mirror ORA/ORA/DesignSystem/Theme.swift */
 :root {
-  --bg: #F7F1EA;
-  --surface: #FFFDFA;
-  --surface-raised: #F0E7DD;
-  --text: #2B1E16;
-  --text-2: #7A6657;
-  --divider: #E6DACD;
-  --accent: #D96A3E;
-  --accent-soft: #FBE3D6;
-  --espresso: #4A3226;
-  --matcha: #6E9E6A;
-  --honey: #E5A93B;
-  --berry: #B8577A;
-  --sky: #4F86B8;
+  --bg: #FFF3D6;
+  --surface: #FFFBF0;
+  --surface-raised: #FBE7B8;
+  --text: #3A2A1E;
+  --text-2: #8A6E58;
+  --divider: #E8D3A8;
+  --accent: #E0603A;
+  --accent-soft: #FAD3C2;
+  --espresso: #8A5A3B;
+  --matcha: #5FA34E;
+  --honey: #F2B63D;
+  --berry: #D45B8C;
+  --sky: #4E8FD6;
   --tab-bg: rgba(255, 253, 250, 0.86);
   --page: #E9E1D7;
   --frame: #1d1714;
@@ -20,25 +21,25 @@
   --r-s: 10px;
   --r-m: 16px;
   --r-l: 24px;
-  --font: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
-  --font-body: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --font: FusionPixel, system-ui, sans-serif;
+  --font-body: var(--font);
   --ease: cubic-bezier(.2, .8, .2, 1);
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #16120F;
-    --surface: #221C18;
-    --surface-raised: #2E2621;
-    --text: #F5ECE3;
-    --text-2: #B3A190;
-    --divider: #3A302A;
-    --accent: #F18C61;
-    --accent-soft: #4A2A1D;
-    --espresso: #E7C9A9;
-    --matcha: #8CC487;
-    --honey: #F2C164;
-    --berry: #E38AAA;
-    --sky: #7FB2E0;
+    --bg: #231915;
+    --surface: #33251E;
+    --surface-raised: #45332A;
+    --text: #FFF1DA;
+    --text-2: #C9AE90;
+    --divider: #4D3A2F;
+    --accent: #F07A52;
+    --accent-soft: #5A2E20;
+    --espresso: #D9A47C;
+    --matcha: #86C673;
+    --honey: #F6C65E;
+    --berry: #E77FA8;
+    --sky: #7AB0E8;
     --tab-bg: rgba(34, 28, 24, 0.86);
     --page: #0e0b09;
     --frame: #000;
@@ -350,3 +351,30 @@ body.embed .screen-root { --top-inset: 8px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* Shared pixel geometry and surfaces from the iOS design system. */
+:root { --ink:#3A2A1E; --r-s:2px; --r-m:3px; --r-l:4px; --tab-bg:var(--surface); }
+@media (prefers-color-scheme:dark) { :root { --ink:#0E0907; } }
+.view,.onboarding { background-image:radial-gradient(var(--divider) .7px,transparent .8px); background-size:8px 8px; }
+.card,.feature,.btn-primary,.btn-secondary,.ob-icon,.ob-office,.thread-row {
+  border:3px solid var(--ink); border-radius:3px; box-shadow:4px 4px var(--ink);
+}
+.btn-primary:active,.btn-secondary:active { transform:translate(3px,3px); box-shadow:1px 1px var(--ink); }
+.avatar,.chip,.coin,.bubble,.search,.ob-form input,.ev-time,.badge,.send,.composer input {
+  border:2px solid var(--ink); border-radius:2px;
+}
+.avatar img { width:100%;height:100%;object-fit:contain;image-rendering:pixelated; }
+.avatar .dot,.dots span { border-radius:0; }
+.ob-portraits {display:flex;gap:8px;align-items:center;height:160px}
+.ob-portraits .avatar:nth-child(even) {transform:translateY(12px)}
+.ob-office {width:min(280px,90%);height:160px;object-fit:cover}
+.segmented {background:none;gap:8px;padding:0}
+.segmented button,.segmented button.on {flex:0 1 auto;border:2px solid var(--ink);border-radius:2px;padding:7px 12px}
+.segmented button.on {background:var(--accent);color:white}
+.progress { display:flex;gap:2px;height:12px;padding:1px;border:2px solid var(--ink);border-radius:0 }
+.progress span { flex:1 }
+.thread-list { background:none;overflow:visible }
+.thread-row,.thread-row + .thread-row {background:var(--surface);margin-bottom:12px;border:3px solid var(--ink)}
+.large-title,.display {font-size:32px;letter-spacing:0}
+.headline,.body-t {font-size:16px}
+.tabbar {background:var(--surface);border-top:2px solid var(--ink)}

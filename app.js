@@ -61,8 +61,11 @@ const threadById = (id) => state.threads.find((t) => t.id === id);
 
 // ---------- components ----------
 function avatar(name, t, size = 44, online = false) {
+  const portrait = ['Alice','Grace','Jack','Joe','Lea','Monica','Stephen','Tom'].includes(name)
+    ? `<img src="assets/portraits/${name}.png" alt="">`
+    : esc(name.slice(0, 1).toUpperCase());
   const dot = online ? `<span class="dot" style="width:${size * 0.28}px;height:${size * 0.28}px"></span>` : '';
-  return `<span class="avatar" style="width:${size}px;height:${size}px;background:${soft(t, 18)};color:${tint(t)};font-size:${size * 0.42}px">${esc(name.slice(0, 1).toUpperCase())}${dot}</span>`;
+  return `<span class="avatar" style="width:${size}px;height:${size}px;background:${soft(t, 18)};color:${tint(t)};font-size:${size * 0.42}px">${portrait}${dot}</span>`;
 }
 function chip(text, { ic, color = 'var(--accent)', selected = false, act = '', data = '' } = {}) {
   const style = selected ? `background:${color};color:#fff` : `background:color-mix(in srgb, ${color} 12%, transparent);color:${color}`;
@@ -93,7 +96,7 @@ function capacityBar(e, color) {
   const full = e.attendees >= e.capacity && !e.isJoined;
   const pct = Math.min(100, (e.attendees / Math.max(e.capacity, 1)) * 100);
   return `<div style="display:flex;flex-direction:column;gap:4px">
-    <div class="progress"><div style="width:${pct}%;background:${full ? 'var(--text-2)' : color}"></div></div>
+    <div class="progress" aria-hidden="true">${Array.from({length:12}, (_, i) => `<span style="background:${i < Math.round(pct * 0.12) ? (full ? 'var(--text-2)' : color) : 'var(--divider)'}"></span>`).join('')}</div>
     <div style="font-size:11px;color:${full ? 'var(--berry)' : 'var(--text-2)'}">${full ? '已满员' : `${e.attendees}/${e.capacity} 人 · 还剩 ${Math.max(0, e.capacity - e.attendees)} 位`}</div></div>`;
 }
 
@@ -679,8 +682,10 @@ function showOnboarding() {
   el.innerHTML = `
     <button class="ob-skip" data-ob="skip">跳过</button>
     <div class="ob-pages">
-      ${OB_PAGES.map((p) => `<div class="ob-page">
-        <div class="ob-icon" style="background:${soft(p.tint)};color:${tint(p.tint)}">${icon(p.icon)}</div>
+      ${OB_PAGES.map((p, index) => `<div class="ob-page">
+        ${index === 1 ? `<div class="ob-portraits">${['Alice','Tom','Grace','Jack'].map((n,i) => avatar(n,i,60,i % 2 === 0)).join('')}</div>`
+          : index === 2 ? '<img class="ob-office" src="assets/office.jpg" alt="像素办公室">'
+          : `<div class="ob-icon" style="background:${soft(p.tint)};color:${tint(p.tint)}">${icon(p.icon)}</div>`}
         <div style="display:flex;flex-direction:column;gap:12px"><div class="display" style="font-size:30px">${p.title}</div><div class="body-t muted">${p.msg}</div></div></div>`).join('')}
       <div class="ob-page ob-form">
         <div class="display" style="font-size:30px">怎么称呼你？</div>
@@ -773,9 +778,28 @@ function startApp() {
   show('');
 }
 
+const savedKeys = ['profile','members','posts','events','threads','sessions'];
+const storageKey = 'ora-play.profile.v1';
+function saveProgress() {
+  if (!state.profile) return;
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(Object.fromEntries(savedKeys.map(key => [key,state[key]]))));
+  } catch { /* Private browsing may disable storage. */ }
+}
+try {
+  const saved = JSON.parse(localStorage.getItem(storageKey), (key, value) =>
+    ['sentAt','createdAt','startDate','startedAt'].includes(key) ? new Date(value) : value);
+  if (saved?.profile?.name && savedKeys.slice(1).every(key => Array.isArray(saved[key]))) {
+    for (const key of savedKeys) state[key] = saved[key];
+  }
+} catch { /* A fresh profile can start normally. */ }
+window.addEventListener('pagehide', saveProgress);
+document.addEventListener('visibilitychange', () => { if (document.hidden) saveProgress(); });
 if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed');
 document.querySelector('.statusbar .time').textContent = '9:41';
-if (new URLSearchParams(location.search).has('skip')) {
+if (state.profile) {
+  startApp();
+} else if (new URLSearchParams(location.search).has('skip')) {
   state.profile = { name: '访客', headline: '', coins: 120, achievements: [] };
   startApp();
 } else {
